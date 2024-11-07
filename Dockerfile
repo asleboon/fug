@@ -20,9 +20,6 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# build for tailwind
-RUN bun run tailwind:build
-
 # copy production dependencies and source code into final image
 FROM base AS release
 
@@ -30,7 +27,6 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /app/src src
 COPY --from=prerelease /app/package.json .
 COPY --from=prerelease /app/tsconfig.json .
-COPY --from=prerelease /app/public public
 
 RUN addgroup --system app --gid 1001
 RUN adduser --system hono --uid 1001

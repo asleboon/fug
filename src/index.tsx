@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { serveStatic } from 'hono/bun';
 import { logger } from 'hono/logger';
 import { timing } from 'hono/timing';
 import { z } from 'zod';
@@ -16,8 +15,6 @@ let filtered = initalData;
 app.use(logger());
 app.use(timing());
 app.use(renderer);
-
-app.use('/public/*', serveStatic({ root: '.' }));
 
 app.get('/', c => {
 	return c.render(
@@ -96,6 +93,7 @@ app.get('/solved', c => {
 const AddSchema = z.string().regex(/^(feat:|bug:)/, {
 	message: "Navn må starte med 'feat:' eller 'bug:'",
 });
+
 app.get('/add', c => {
 	const nameQuery = AddSchema.safeParse(c.req.query('name'));
 
