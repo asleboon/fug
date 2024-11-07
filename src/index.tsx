@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { renderer } from './renderer';
 import { initalData } from './data';
 import { byDate, byId, byName, bySolved, byType } from './lib/sort';
-import { origin } from 'bun';
 import { FugList } from './components/fug-list';
 
 const app = new Hono();
@@ -18,17 +17,13 @@ app.use(logger());
 app.use(timing());
 app.use(renderer);
 
-const AddSchema = z.string().regex(/^(feat:|bug:)/, {
-	message: "Navn må starte med 'feat:' eller 'bug:'",
-});
-
 app.use('/public/*', serveStatic({ root: '.' }));
 
 app.get('/', c => {
 	return c.render(
 		<table
 			id='#fug-list'
-			hx-get='/filter?f=all'
+			hx-get='/sort?sortBy=type'
 			hx-swap='outerHTML transition:true'
 			hx-trigger='load'
 		/>
@@ -42,14 +37,19 @@ app.get('/sort', c => {
 	switch (sortBy) {
 		case 'id':
 			sorted = [...filtered.sort(byId)];
+			break;
 		case 'name':
 			sorted = [...filtered.sort(byName)];
+			break;
 		case 'type':
 			sorted = [...filtered.sort(byType)];
+			break;
 		case 'created':
 			sorted = [...filtered.sort(byDate)];
+			break;
 		case 'solved':
 			sorted = [...filtered.sort(bySolved)];
+			break;
 		default:
 			sorted = original;
 	}
@@ -93,6 +93,9 @@ app.get('/solved', c => {
 	return c.html(<FugList items={original} />);
 });
 
+const AddSchema = z.string().regex(/^(feat:|bug:)/, {
+	message: "Navn må starte med 'feat:' eller 'bug:'",
+});
 app.get('/add', c => {
 	const nameQuery = AddSchema.safeParse(c.req.query('name'));
 
