@@ -1,0 +1,8 @@
+services:
+  fug:
+    container_name: fug
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"

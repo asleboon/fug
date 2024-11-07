@@ -1,0 +1,15 @@
+{
+  "name": "fug",
+  "scripts": {
+    "dev": "bun run --hot src/index.tsx"
+  },
+  "dependencies": {
+    "hono": "^4.6.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prettier": "^3.3.3",
+    "typed-htmx": "^0.3.1"
+  }
+}
