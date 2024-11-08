@@ -16,6 +16,7 @@ let filtered = initalData;
 app.use(logger());
 app.use(timing());
 app.use(renderer);
+app.use(customLogger());
 
 app.get('/', c => {
 	return c.render(
@@ -91,8 +92,8 @@ app.get('/solved', c => {
 	return c.html(<FugList items={original} />);
 });
 
-const AddSchema = z.string().regex(/^(feat:|bug:)/, {
-	message: "Navn må starte med 'feat:' eller 'bug:'",
+const AddSchema = z.string().regex(/^(feat |bug )/, {
+	message: "Navn må starte med 'feat ...' eller 'bug ...'",
 });
 
 app.get('/add', c => {
@@ -107,7 +108,7 @@ app.get('/add', c => {
 					hx-swap-oob='true'
 					hx-swap='none'
 				>
-					Start with 'feat: something' or 'bug: something'
+					Navn må starte med 'feat ...' eller 'bug ...'
 				</p>
 				<FugList items={original} />
 			</>
@@ -115,7 +116,8 @@ app.get('/add', c => {
 	}
 
 	const { data } = nameQuery;
-	const [type, name] = data.split(':');
+	const [type, ...rest] = data.split(' ');
+	const name = rest.join(' ');
 
 	switch (type) {
 		case 'feat':
