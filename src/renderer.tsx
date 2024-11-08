@@ -19,15 +19,15 @@ export const renderer = jsxRenderer(({ children }) => {
 
 				<title>FUG</title>
 			</head>
-			<body class='flex w-full h-screen p-8'>
-				<main class='flex w-full flex-col gap-2 p-8'>
+			<body class='flex w-full h-screen p-4 md:p-8'>
+				<main class='flex w-full flex-col gap-2 p-4 md:p-8'>
 					<h1 class='font-bold text-4xl'>
 						FUG<span class='text-xs'>Feature / bug list</span>
 					</h1>
-					<div class='flex gap-4 items-center'>
+					<div class='flex flex-col md:flex-row gap-4 items-center'>
 						<input
 							id='new-item'
-							class='p-2 border border-gray-200 rounded-md w-[20vw]'
+							class='p-2 border border-gray-200 rounded-md min-w-[20vw]'
 							name='name'
 							hx-get='/add'
 							hx-swap='outerHTML transition:true'
