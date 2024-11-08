@@ -4,9 +4,12 @@ import { timing } from 'hono/timing';
 import { z } from 'zod';
 import { renderer } from './renderer';
 import { initalData } from './data';
-import { byDate, byId, byName, bySolved, byType } from './lib/sort';
+import { sortFugList } from './lib/sort';
 import { FugList } from './components/fug-list';
 import { customLogger } from './middleware/pino-logger';
+import { zValidator } from '@hono/zod-validator';
+import { FilterBySchema, SortBySchema } from './schema';
+import { filterFugList } from './lib/filter';
 
 const app = new Hono();
 
@@ -29,48 +32,19 @@ app.get('/', c => {
 	);
 });
 
-app.get('/sort', c => {
-	const sortBy = c.req.query('sortBy');
-	let sorted = [];
-
-	switch (sortBy) {
-		case 'id':
-			sorted = [...filtered.sort(byId)];
-			break;
-		case 'name':
-			sorted = [...filtered.sort(byName)];
-			break;
-		case 'type':
-			sorted = [...filtered.sort(byType)];
-			break;
-		case 'created':
-			sorted = [...filtered.sort(byDate)];
-			break;
-		case 'solved':
-			sorted = [...filtered.sort(bySolved)];
-			break;
-		default:
-			sorted = original;
-	}
-
+app.get('/sort', zValidator('query', SortBySchema), c => {
+	const { sortBy } = c.req.valid('query');
+	const sorted = sortFugList(sortBy, filtered, original);
 	return c.html(<FugList items={sorted} />);
 });
 
-app.get('/filter', c => {
-	switch (c.req.query('f')) {
-		case 'solved':
-			filtered = [...original.filter(({ solved }) => !!solved)];
-			return c.html(<FugList items={filtered} />);
-		case 'unresolved':
-			filtered = [...original.filter(({ solved }) => !solved)];
-			return c.html(<FugList items={filtered} />);
-		default:
-			filtered = original;
-			return c.html(<FugList items={filtered} />);
-	}
+app.get('/filter', zValidator('query', FilterBySchema), c => {
+	const { filterBy } = c.req.valid('query');
+	filtered = filterFugList(filterBy, original);
+	return c.html(<FugList items={filtered} />);
 });
 
-app.get('/solved', c => {
+app.get('/resolved', c => {
 	const id = c.req.query('id');
 
 	if (!id) {
@@ -85,7 +59,7 @@ app.get('/solved', c => {
 
 	original = [
 		...original.slice(0, index),
-		{ ...original[index], solved: true },
+		{ ...original[index], resolved: true },
 		...original.slice(index + 1),
 	];
 
@@ -93,7 +67,7 @@ app.get('/solved', c => {
 });
 
 const AddSchema = z.string().regex(/^(feat |bug )/, {
-	message: "Navn må starte med 'feat ...' eller 'bug ...'",
+	message: "Starte med 'feat ...' eller 'bug ...'",
 });
 
 app.get('/add', c => {
@@ -108,7 +82,7 @@ app.get('/add', c => {
 					hx-swap-oob='true'
 					hx-swap='none'
 				>
-					Navn må starte med 'feat ...' eller 'bug ...'
+					Start med 'feat ...' eller 'bug ...'
 				</p>
 				<FugList items={original} />
 			</>
@@ -130,7 +104,7 @@ app.get('/add', c => {
 				type: 'feature',
 				name: name.trim(),
 				created: new Date().toISOString(),
-				solved: false,
+				resolved: false,
 			});
 
 			return c.html(<FugList items={original} />);
@@ -145,7 +119,7 @@ app.get('/add', c => {
 				type: 'bug',
 				name: name.trim(),
 				created: new Date().toISOString().split('.')[0],
-				solved: false,
+				resolved: false,
 			});
 
 			return c.html(<FugList items={original} />);

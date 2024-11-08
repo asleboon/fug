@@ -43,7 +43,7 @@ export const renderer = jsxRenderer(({ children }) => {
 								All
 								<input
 									type='radio'
-									name='f'
+									name='filterBy'
 									value='all'
 									hx-get='/filter'
 									hx-target='#fug-list'
@@ -51,11 +51,11 @@ export const renderer = jsxRenderer(({ children }) => {
 								/>
 							</label>
 							<label class='flex gap-1'>
-								Solved
+								Resolved
 								<input
 									type='radio'
-									name='f'
-									value='solved'
+									name='filterBy'
+									value='resolved'
 									hx-get='/filter'
 									hx-target='#fug-list'
 									hx-swap='outerHTML transition:true'
@@ -65,7 +65,7 @@ export const renderer = jsxRenderer(({ children }) => {
 								Unresolved
 								<input
 									type='radio'
-									name='f'
+									name='filterBy'
 									value='unresolved'
 									hx-get='/filter'
 									hx-target='#fug-list'

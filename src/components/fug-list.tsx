@@ -36,16 +36,16 @@ export const FugList: FC<{ items: typeof initalData }> = ({ items }) => {
 						Created
 					</th>
 					<th
-						hx-get='/sort?sortBy=solved'
+						hx-get='/sort?sortBy=resolved'
 						hx-target='#fug-list'
 						hx-swap='outerHTML transition:true'
 					>
-						Solved?
+						Resolved?
 					</th>
 				</tr>
 			</thead>
 			<tbody>
-				{items.map(({ id, name, type, created, solved }) => (
+				{items.map(({ id, name, type, created, resolved }) => (
 					<tr class='border px-4 border-2 text-lg text-left text-primary font-bold border-primary hover:bg-primary hover:text-backgroundColor'>
 						<th class='px-2 py-1'>{id}</th>
 						<td>{name}</td>
@@ -55,8 +55,8 @@ export const FugList: FC<{ items: typeof initalData }> = ({ items }) => {
 						<td>
 							<input
 								type='checkbox'
-								checked={solved}
-								hx-get={`/solved?id=${id}`}
+								checked={resolved}
+								hx-get={`/resolved?id=${id}`}
 							/>
 						</td>
 					</tr>
