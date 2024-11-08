@@ -6,6 +6,7 @@ import { renderer } from './renderer';
 import { initalData } from './data';
 import { byDate, byId, byName, bySolved, byType } from './lib/sort';
 import { FugList } from './components/fug-list';
+import { customLogger } from './middleware/pino-logger';
 
 const app = new Hono();
 
